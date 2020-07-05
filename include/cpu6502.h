@@ -46,7 +46,7 @@ class Cpu6502 {
 	uint8_t  sp;
 	Status   sr;
 
-	uint8_t m;
+	uint16_t m;
 
 	std::array<Instruction, 0x100> lookup;
 	std::array<uint8_t, 0x1FFF>	bus;
