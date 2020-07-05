@@ -3,16 +3,16 @@
 Cpu6502::Cpu6502()
 {
     lookup = {
-        {0x00, "BRK", Cpu6502::brk, Cpu6502::implied,    7},
-        {0x01, "ORA", Cpu6502::ora, Cpu6502::indirect_x, 6},
-        {0x02, "ERR", Cpu6502::err, Cpu6502::implied,    0},
-        {0x03, "ERR", Cpu6502::err, Cpu6502::implied,    0},
-        {0x04, "ERR", Cpu6502::err, Cpu6502::implied,    0},
-        {0x05, "ORA", Cpu6502::ora, Cpu6502::zero_page,  3},
-        {0x06, "ASL", Cpu6502::asl, Cpu6502::zero_page,  5},
-        {0x07, "ERR", Cpu6502::err, Cpu6502::implied,    0},
-        {0x08, "PHP", Cpu6502::php, Cpu6502::implied,    3},
-        {0x09, "ORA", Cpu6502::ora, Cpu6502::immidiate,  2}
+        Instruction{0x00, "BRK", std::bind(&Cpu6502::brk, this), std::bind(&Cpu6502::implied, this),    7},
+        Instruction{0x01, "ORA", std::bind(&Cpu6502::ora, this), std::bind(&Cpu6502::indirect_x, this), 6},
+        Instruction{0x02, "ERR", std::bind(&Cpu6502::err, this), std::bind(&Cpu6502::implied, this),    0},
+        Instruction{0x03, "ERR", std::bind(&Cpu6502::err, this), std::bind(&Cpu6502::implied, this),    0},
+        Instruction{0x04, "ERR", std::bind(&Cpu6502::err, this), std::bind(&Cpu6502::implied, this),    0},
+        Instruction{0x05, "ORA", std::bind(&Cpu6502::ora, this), std::bind(&Cpu6502::zero_page, this),  3},
+        Instruction{0x06, "ASL", std::bind(&Cpu6502::asl, this), std::bind(&Cpu6502::zero_page, this),  5},
+        Instruction{0x07, "ERR", std::bind(&Cpu6502::err, this), std::bind(&Cpu6502::implied, this),    0},
+        Instruction{0x08, "PHP", std::bind(&Cpu6502::php, this), std::bind(&Cpu6502::implied, this),    3},
+        Instruction{0x09, "ORA", std::bind(&Cpu6502::ora, this), std::bind(&Cpu6502::immidiate, this),  2}
     };
 
 
@@ -21,11 +21,18 @@ Cpu6502::Cpu6502()
     bus[2] = 0x09;
     bus[3] = 0x01;
 
+	clock_counter = 0;
+	pc = 0;
+
+
 }
 
-Cpu6502::Clock()
+void Cpu6502::clock()
 {
     //TODO check interrupt
+	
+
+	std::cout << "Accumulator: " << unsigned(a) << std::endl;
 
     if (clock_counter != 0) {
         clock_counter--;
@@ -33,6 +40,9 @@ Cpu6502::Clock()
     }
 
     uint8_t op = bus[pc];
+
+	std::cout << "pc: " << pc << std::endl;
+	std::cout << "Op: " << unsigned(op) << std::endl;
 
     Instruction instruction = lookup[op];
     clock_counter = instruction.cycles;
@@ -64,6 +74,7 @@ uint8_t Cpu6502::zero_page()
 
 uint8_t Cpu6502::immidiate()
 {
+	m = bus[pc + 1];
     pc += 2;
     return 0;
 }
@@ -90,6 +101,11 @@ void Cpu6502::err()
 }
 
 void Cpu6502::asl()
+{
+
+}
+
+void Cpu6502::php()
 {
 
 }

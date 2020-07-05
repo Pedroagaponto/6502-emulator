@@ -5,6 +5,9 @@
 #include <string>
 #include <functional>
 
+
+#include <iostream>
+
 typedef struct {
     int8_t opcode;
     std::string name;
@@ -18,7 +21,7 @@ struct sr_modes {
     bool negative    : 1;
     bool overflow    : 1;
     bool ignored     : 1;
-    bool break       : 1;
+    bool s_break     : 1;
     bool decimal     : 1;
     bool interrupt   : 1;
     bool zero        : 1;
@@ -34,6 +37,7 @@ typedef union {
 class Cpu6502
 {
 public:
+	Cpu6502();
 
     void clock();
 
@@ -46,9 +50,10 @@ private:
 
     uint8_t m;
 
-    std::array<Instruction, 0x09> lookup;
+    std::array<Instruction, 0x0A> lookup;
     std::array<uint8_t, 0x1FFF> bus;
 
+	uint8_t clock_counter;
 
     //Address mode
     uint8_t implied();
@@ -61,4 +66,5 @@ private:
     void ora();
     void err();
     void asl();
-}
+    void php();
+};
