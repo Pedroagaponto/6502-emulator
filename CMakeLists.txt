@@ -5,4 +5,4 @@ project(nes)
 include_directories(include)
 
 # add the executable
-add_executable(nes src/main.cpp src/cpu6502.cpp)
+add_executable(nes src/main.cpp src/cpu6502.cpp src/log.cpp)
