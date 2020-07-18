@@ -10,7 +10,7 @@ void Cpu6502::clock() {
 		return;
 	}
 
-	uint8_t op = bus[pc];
+	uint8_t op = read_m(pc);
 
 	log->debug("PC: " + std::to_string(pc));
 	log->debug("OP: " + std::to_string(op));
@@ -33,7 +33,7 @@ uint8_t Cpu6502::absolute_y() { return 0; }
 uint8_t Cpu6502::absolute() { return 0; }
 uint8_t Cpu6502::accumulator() { return 0; }
 uint8_t Cpu6502::immediate() {
-	m = bus[pc + 1];
+	m = read_m(pc + 1);
 	pc += 2;
 	return 0;
 }
@@ -178,8 +178,8 @@ void Cpu6502::JMT() {}
 void Cpu6502::JSR() {
 	// TODO: m vira ponteiro
 	pc--;
-	bus[sp--] = pc >> 8;  // TODO: hi or low first
-	bus[sp--] = pc & 0xFF;
+	write_m(sp--, pc >> 8); // TODO: hi or low first
+	write_m(sp--, pc & 0xFF);
 
 	pc = m;
 }
@@ -216,17 +216,17 @@ void Cpu6502::ORA() {
 	sr.bit.zero		= a == 0x00;
 	sr.bit.negative = a & 0x80;
 }
-void Cpu6502::PHA() { bus[sp--] = a; }
-void Cpu6502::PHP() { bus[sp--] = sr.full; }
+void Cpu6502::PHA() { write_m(sp--, a); }
+void Cpu6502::PHP() { write_m(sp--, sr.full); }
 void Cpu6502::PHX() {}
 void Cpu6502::PHY() {}
 void Cpu6502::PLA() {
-	a = bus[++sp];
+	a = read_m(++sp);
 
 	sr.bit.zero		= a == 0x00;
 	sr.bit.negative = a & 0x80;
 }
-void Cpu6502::PLP() { sr.full = bus[++sp]; }
+void Cpu6502::PLP() { sr.full = read_m(++sp); }
 void Cpu6502::PLX() {}
 void Cpu6502::PLY() {}
 void Cpu6502::RMB() {}
@@ -253,9 +253,8 @@ void Cpu6502::ROR() {
 }
 void Cpu6502::RTI() {}
 void Cpu6502::RTS() {
-	pc = bus[++sp];
-	pc |= (uint16_t)bus[++sp] << 8;
-
+	pc = read_m(++sp);
+	pc |= (uint16_t)read_m(++sp) << 8;
 	pc++;
 }
 void Cpu6502::SBC() {}
@@ -541,10 +540,10 @@ Cpu6502::Cpu6502() {
 	};
 	// clang-format on
 
-	bus[0] = 0x09;
-	bus[1] = 0x02;
-	bus[2] = 0x2A;
-	bus[3] = 0x01;
+	write_m(0, 0x09);
+	write_m(1, 0x02);
+	write_m(2, 0x09);
+	write_m(3, 0x01);
 
 	clock_counter = 0;
 	pc			  = 0;
@@ -552,4 +551,10 @@ Cpu6502::Cpu6502() {
 	log = Log::getInstance();
 }
 
+void Cpu6502::write_m(uint16_t address, uint8_t date) {
+	bus[address] = date;
+}
 
+uint8_t Cpu6502::read_m(uint16_t address) {
+	return bus[address];
+}
