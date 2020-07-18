@@ -8,11 +8,14 @@
 
 #include "log.h"
 
+typedef enum { ABY, ABX, ABS, ACC, IMM, IMP, INX, IND, INY, REL, ZPX, ZPY, ZRP, INZ, ZPR, IAX } Addr;
+
 typedef struct {
 	uint8_t						 opcode;
 	std::string					 name;
 	std::function<void(void)>	function;
 	std::function<uint8_t(void)> addressing;
+	Addr						 addr;
 	uint8_t						 cycles;
 } Instruction;
 
@@ -33,6 +36,10 @@ typedef union {
 } Status;
 
 class Cpu6502 {
+   private:
+	//	uint8_t read_m(uint16_t address);
+	//	write_m(uint16_t address, uint8_t data);
+
    public:
 	Cpu6502();
 
@@ -46,7 +53,10 @@ class Cpu6502 {
 	uint8_t  sp;
 	Status   sr;
 
-	uint16_t m;
+	uint8_t  m;
+	uint16_t tmp;
+
+	Instruction current_instruction;
 
 	std::array<Instruction, 0x100> lookup;
 	std::array<uint8_t, 0x1FFF>	bus;
@@ -74,8 +84,8 @@ class Cpu6502 {
 	uint8_t iax();
 
 	// Instructions
-	void AND();
 	void ADC();
+	void AND();
 	void ASL();
 	void BBR();
 	void BBS();
