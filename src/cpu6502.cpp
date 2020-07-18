@@ -551,3 +551,5 @@ Cpu6502::Cpu6502() {
 
 	log = Log::getInstance();
 }
+
+

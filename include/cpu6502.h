@@ -37,8 +37,8 @@ typedef union {
 
 class Cpu6502 {
    private:
-	//	uint8_t read_m(uint16_t address);
-	//	write_m(uint16_t address, uint8_t data);
+	uint8_t read_m(uint16_t address);
+	void write_m(uint16_t address, uint8_t data);
 
    public:
 	Cpu6502();
