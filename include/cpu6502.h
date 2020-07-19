@@ -38,7 +38,7 @@ typedef union {
 class Cpu6502 {
    private:
 	uint8_t read_m(uint16_t address);
-	void write_m(uint16_t address, uint8_t data);
+	void	write_m(uint16_t address, uint8_t data);
 
    public:
 	Cpu6502();
@@ -54,6 +54,7 @@ class Cpu6502 {
 	Status   sr;
 
 	uint8_t  m;
+	uint16_t addr;
 	uint16_t tmp;
 
 	Instruction current_instruction;

@@ -1,4 +1,5 @@
 #include "cpu6502.h"
+#include "utils.h"
 
 void Cpu6502::clock() {
 	// TODO check interrupt
@@ -19,6 +20,7 @@ void Cpu6502::clock() {
 	clock_counter		= current_instruction.cycles;
 
 	// bus[bus[pc]]
+	pc++;
 	clock_counter += current_instruction.addressing();
 	current_instruction.function();
 
@@ -28,13 +30,37 @@ void Cpu6502::clock() {
 }
 
 // Address mode
-uint8_t Cpu6502::absolute_x() { return 0; }
-uint8_t Cpu6502::absolute_y() { return 0; }
-uint8_t Cpu6502::absolute() { return 0; }
-uint8_t Cpu6502::accumulator() { return 0; }
+uint8_t Cpu6502::absolute_x() {
+	uint16_t l = read_m(pc++);
+	uint16_t h = read_m(pc++);
+	addr	   = (h << 8) | l;
+	addr += x;
+
+	if ((addr >> 8) != h) clock_counter++;
+
+	return 0;
+}
+uint8_t Cpu6502::absolute_y() {
+	uint16_t l = read_m(pc++);
+	uint16_t h = read_m(pc++);
+	addr	   = (h << 8) | l;
+	addr += y;
+
+	if ((addr >> 8) != h) clock_counter++;
+	return 0;
+}
+uint8_t Cpu6502::absolute() {
+	uint16_t l = read_m(pc++);
+	uint16_t h = read_m(pc++);
+	addr	   = (h << 8) | l;
+	return 0;
+}
+uint8_t Cpu6502::accumulator() {
+	m = a;
+	return 0;
+}
 uint8_t Cpu6502::immediate() {
-	m = read_m(pc + 1);
-	pc += 2;
+	m = read_m(pc++);
 	return 0;
 }
 uint8_t Cpu6502::implied() { return 0; }
@@ -59,15 +85,15 @@ void Cpu6502::AND() {
 	sr.bit.negative = a & 0x80;
 }
 void Cpu6502::ADC() {
-	uint16_t sum = m + (uint16_t)a + (uint16_t)sr.bit.carry;
+	tmp = (uint16_t)m + (uint16_t)a + (uint16_t)sr.bit.carry;
 
-	sr.bit.carry	= sum & 0xFF00;  // sum > 255
-	sr.bit.overflow = (~(a ^ m) & (a ^ sum)) & 0x80;
+	sr.bit.carry	= tmp & 0xFF00;  // tmp > 255
+	sr.bit.overflow = (~(a ^ m) & (a ^ tmp)) & 0x80;
 
-	sr.bit.zero		= (sum & 0xFF) == 0;
+	sr.bit.zero		= (tmp & 0xFF) == 0;
 	sr.bit.negative = a & 0x80;
 
-	a = sum & 0xFF;
+	a = tmp & 0xFF;
 }
 void Cpu6502::ASL() {
 	bool carry = sr.bit.carry;
@@ -178,7 +204,7 @@ void Cpu6502::JMT() {}
 void Cpu6502::JSR() {
 	// TODO: m vira ponteiro
 	pc--;
-	write_m(sp--, pc >> 8); // TODO: hi or low first
+	write_m(sp--, pc >> 8);
 	write_m(sp--, pc & 0xFF);
 
 	pc = m;
@@ -258,18 +284,16 @@ void Cpu6502::RTS() {
 	pc++;
 }
 void Cpu6502::SBC() {
-	/*
-	uint16_t  = m + (uint16_t)a + (uint16_t)sr.bit.carry;
+	tmp = m ^ 0xFF;
+	tmp = tmp + (uint16_t)a + (uint16_t)sr.bit.carry;
 
-	sr.bit.carry	= sum & 0xFF00;  // sum > 255
-	sr.bit.overflow = (~(a ^ m) & (a ^ sum)) & 0x80;
+	sr.bit.carry	= tmp & 0xFF00;  // tmp > 255
+	sr.bit.overflow = (~(a ^ m) & (a ^ tmp)) & 0x80;
 
-	sr.bit.zero		= (sum & 0xFF) == 0;
+	sr.bit.zero		= (tmp & 0xFF) == 0;
 	sr.bit.negative = a & 0x80;
 
-	a = sum & 0xFF;
-	*/
-	// uint16_t sub = (u_int16_t) a
+	a = tmp & 0xFF;
 }
 void Cpu6502::SEC() { sr.bit.carry = 1; }
 void Cpu6502::SED() { sr.bit.decimal = 0; }
@@ -553,21 +577,12 @@ Cpu6502::Cpu6502() {
 	};
 	// clang-format on
 
-	write_m(0, 0x09);
-	write_m(1, 0x02);
-	write_m(2, 0x09);
-	write_m(3, 0x01);
-
 	clock_counter = 0;
 	pc			  = 0;
 
 	log = Log::getInstance();
 }
 
-void Cpu6502::write_m(uint16_t address, uint8_t date) {
-	bus[address] = date;
-}
+void Cpu6502::write_m(uint16_t address, uint8_t date) { bus[address] = date; }
 
-uint8_t Cpu6502::read_m(uint16_t address) {
-	return bus[address];
-}
+uint8_t Cpu6502::read_m(uint16_t address) { return bus[address]; }
