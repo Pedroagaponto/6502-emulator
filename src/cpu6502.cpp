@@ -293,7 +293,12 @@ void Cpu6502::ROR() {
 		write_m(addr, m);
 	}
 }
-void Cpu6502::RTI() {}
+void Cpu6502::RTI() {
+	sr.full = read_m(++sp);
+	
+	pc = read_m(++sp);
+	pc |= (uint16_t)read_m(++sp) << 8;
+}
 void Cpu6502::RTS() {
 	pc = read_m(++sp);
 	pc |= (uint16_t)read_m(++sp) << 8;
@@ -315,20 +320,40 @@ void Cpu6502::SEC() { sr.bit.carry = 1; }
 void Cpu6502::SED() { sr.bit.decimal = 0; }
 void Cpu6502::SEI() { sr.bit.interrupt = 0; }
 void Cpu6502::SMB() {}
-void Cpu6502::STA() { m = a; }
+void Cpu6502::STA() { write_m(addr, a); }
 void Cpu6502::STC() {}
 void Cpu6502::STP() {}
-void Cpu6502::STX() { m = x; }
-void Cpu6502::STY() { m = y; }
+void Cpu6502::STX() { write_m(addr, x); }
+void Cpu6502::STY() { write_m(addr, y); }
 void Cpu6502::STZ() {}
-void Cpu6502::TAX() { x = a; }
-void Cpu6502::TAY() { y = a; }
+void Cpu6502::TAX() { 
+	x = a; 
+	sr.bit.zero = x == 0;
+	sr.bit.negative = x & 0x80;
+}
+void Cpu6502::TAY() { 
+	y = a; 
+	sr.bit.zero = y == 0;
+	sr.bit.negative = y & 0x80;
+}
 void Cpu6502::TRB() {}
 void Cpu6502::TSB() {}
-void Cpu6502::TSX() { x = sp; }
-void Cpu6502::TXA() { a = x; }
+void Cpu6502::TSX() { 
+	x = sp; 
+	sr.bit.zero = x == 0;
+	sr.bit.negative = x & 0x80;
+}
+void Cpu6502::TXA() { 
+	a = x; 
+	sr.bit.zero = a == 0;
+	sr.bit.negative = a & 0x80;
+}
 void Cpu6502::TXS() { sp = x; }
-void Cpu6502::TYA() { a = y; }
+void Cpu6502::TYA() { 
+	a = y; 
+	sr.bit.zero = a == 0;
+	sr.bit.negative = a & 0x80;
+}
 void Cpu6502::WAI() {}
 
 // clang-format off
