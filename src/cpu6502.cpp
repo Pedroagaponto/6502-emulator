@@ -234,6 +234,12 @@ void Cpu6502::LSR() {
 
 	sr.bit.zero		= m == 0x00;
 	sr.bit.negative = m & 0x80;
+
+	if (current_instruction.addr == Addr::ACC) {
+		a = m;
+	} else {
+		write_m(addr, m);
+	}
 }
 void Cpu6502::NOP() { return; }
 void Cpu6502::ORA() {
@@ -265,7 +271,11 @@ void Cpu6502::ROL() {
 	sr.bit.zero		= m == 0x00;
 	sr.bit.negative = m & 0x80;
 
-	// TODO: if (&current_instruction.addresing == &Cpu6502::accumulator)
+	if (current_instruction.addr == Addr::ACC) {
+		a = m;
+	} else {
+		write_m(addr, m);
+	}
 }
 void Cpu6502::ROR() {
 	// C -> [76543210] -> C
@@ -276,6 +286,12 @@ void Cpu6502::ROR() {
 	sr.bit.carry	= carry;
 	sr.bit.zero		= m == 0x00;
 	sr.bit.negative = m & 0x80;
+
+	if (current_instruction.addr == Addr::ACC) {
+		a = m;
+	} else {
+		write_m(addr, m);
+	}
 }
 void Cpu6502::RTI() {}
 void Cpu6502::RTS() {
