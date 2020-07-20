@@ -57,7 +57,6 @@ void Utils::load_formatted_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::string
 			ifs >> value;
 			m[i] = value;
 		}
-		ifs.ignore(1, ' ');
 		ifs.ignore(1, '\n');
 	}
 }
