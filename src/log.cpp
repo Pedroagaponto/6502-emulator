@@ -11,7 +11,7 @@ Log* Log::getInstance() {
 
 Log::Log() {
 	level = LOG_LEVEL;
-	os	= std::ofstream(std::string(LOG_DIR) + std::string("log.log"), std::ofstream::out);
+	os	  = std::ofstream(std::string(LOG_DIR) + std::string("log.log"), std::ofstream::out);
 }
 
 Log::~Log() { os.close(); }

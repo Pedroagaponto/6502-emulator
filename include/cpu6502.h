@@ -13,7 +13,7 @@ typedef enum { ABY, ABX, ABS, ACC, IMM, IMP, INX, IND, INY, REL, ZPX, ZPY, ZRP, 
 typedef struct {
 	uint8_t						 opcode;
 	std::string					 name;
-	std::function<void(void)>	function;
+	std::function<void(void)>	 function;
 	std::function<uint8_t(void)> addressing;
 	Addr						 addr;
 	uint8_t						 cycles;
@@ -48,19 +48,19 @@ class Cpu6502 {
    private:
 	Log *log;
 
-	uint8_t  a, x, y;
+	uint8_t	 a, x, y;
 	uint16_t pc;
-	uint8_t  sp;
-	Status   sr;
+	uint8_t	 sp;
+	Status	 sr;
 
-	uint8_t  m;
+	uint8_t	 m;
 	uint16_t addr;
 	uint16_t tmp;
 
 	Instruction current_instruction;
 
 	std::array<Instruction, 0x100> lookup;
-	std::array<uint8_t, 0x1FFF>	bus;
+	std::array<uint8_t, 0x1FFF>	   bus;
 
 	uint8_t clock_counter;
 

@@ -13,8 +13,8 @@
 typedef enum {
 	LOG_LEVEL_TRACE = 0,
 	LOG_LEVEL_DEBUG = 1,
-	LOG_LEVEL_WARN  = 2,
-	LOG_LEVEL_INFO  = 3,
+	LOG_LEVEL_WARN	= 2,
+	LOG_LEVEL_INFO	= 3,
 	LOG_LEVEL_ERROR = 4
 } LogLevel;
 
@@ -23,7 +23,7 @@ class Log {
 	static Log* getInstance();
 
    private:
-	static Log*   instance;
+	static Log*	  instance;
 	LogLevel	  level;
 	std::ofstream os;
 

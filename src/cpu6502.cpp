@@ -1,4 +1,5 @@
 #include "cpu6502.h"
+
 #include "utils.h"
 
 void Cpu6502::clock() {
@@ -87,7 +88,7 @@ void Cpu6502::AND() {
 void Cpu6502::ADC() {
 	tmp = (uint16_t)m + (uint16_t)a + (uint16_t)sr.bit.carry;
 
-	sr.bit.carry	= tmp & 0xFF00;  // tmp > 255
+	sr.bit.carry	= tmp & 0xFF00;	 // tmp > 255
 	sr.bit.overflow = (~(a ^ m) & (a ^ tmp)) & 0x80;
 
 	sr.bit.zero		= (tmp & 0xFF) == 0;
@@ -295,7 +296,7 @@ void Cpu6502::ROR() {
 }
 void Cpu6502::RTI() {
 	sr.full = read_m(++sp);
-	
+
 	pc = read_m(++sp);
 	pc |= (uint16_t)read_m(++sp) << 8;
 }
@@ -308,7 +309,7 @@ void Cpu6502::SBC() {
 	tmp = m ^ 0xFF;
 	tmp = tmp + (uint16_t)a + (uint16_t)sr.bit.carry;
 
-	sr.bit.carry	= tmp & 0xFF00;  // tmp > 255
+	sr.bit.carry	= tmp & 0xFF00;	 // tmp > 255
 	sr.bit.overflow = (~(a ^ m) & (a ^ tmp)) & 0x80;
 
 	sr.bit.zero		= (tmp & 0xFF) == 0;
@@ -326,32 +327,32 @@ void Cpu6502::STP() {}
 void Cpu6502::STX() { write_m(addr, x); }
 void Cpu6502::STY() { write_m(addr, y); }
 void Cpu6502::STZ() {}
-void Cpu6502::TAX() { 
-	x = a; 
-	sr.bit.zero = x == 0;
+void Cpu6502::TAX() {
+	x				= a;
+	sr.bit.zero		= x == 0;
 	sr.bit.negative = x & 0x80;
 }
-void Cpu6502::TAY() { 
-	y = a; 
-	sr.bit.zero = y == 0;
+void Cpu6502::TAY() {
+	y				= a;
+	sr.bit.zero		= y == 0;
 	sr.bit.negative = y & 0x80;
 }
 void Cpu6502::TRB() {}
 void Cpu6502::TSB() {}
-void Cpu6502::TSX() { 
-	x = sp; 
-	sr.bit.zero = x == 0;
+void Cpu6502::TSX() {
+	x				= sp;
+	sr.bit.zero		= x == 0;
 	sr.bit.negative = x & 0x80;
 }
-void Cpu6502::TXA() { 
-	a = x; 
-	sr.bit.zero = a == 0;
+void Cpu6502::TXA() {
+	a				= x;
+	sr.bit.zero		= a == 0;
 	sr.bit.negative = a & 0x80;
 }
 void Cpu6502::TXS() { sp = x; }
-void Cpu6502::TYA() { 
-	a = y; 
-	sr.bit.zero = a == 0;
+void Cpu6502::TYA() {
+	a				= y;
+	sr.bit.zero		= a == 0;
 	sr.bit.negative = a & 0x80;
 }
 void Cpu6502::WAI() {}

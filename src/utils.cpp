@@ -25,7 +25,7 @@ void Utils::store_formatted_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::strin
 
 	// normalize index
 	begin = begin - (begin % 8);
-	end   = end + (end % 8) == 0 ? 0 : end + 8 - end % 8;
+	end	  = end + (end % 8) == 0 ? 0 : end + 8 - end % 8;
 
 	ofs << std::hex << std::setfill('0') << std::uppercase;
 
