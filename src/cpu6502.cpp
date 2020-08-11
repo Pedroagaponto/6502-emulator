@@ -620,7 +620,7 @@ Cpu6502::Cpu6502() {
 	// clang-format on
 
 	clock_counter = 0;
-	pc			  = 0;
+	pc			  = 0xE010;
 
 	log = Log::getInstance();
 }

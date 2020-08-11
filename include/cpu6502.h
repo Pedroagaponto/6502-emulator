@@ -45,6 +45,8 @@ class Cpu6502 {
 
 	void clock();
 
+	std::array<uint8_t, 0xFFFF>	   bus;
+
    private:
 	Log *log;
 
@@ -60,7 +62,6 @@ class Cpu6502 {
 	Instruction current_instruction;
 
 	std::array<Instruction, 0x100> lookup;
-	std::array<uint8_t, 0x1FFF>	   bus;
 
 	uint8_t clock_counter;
 
