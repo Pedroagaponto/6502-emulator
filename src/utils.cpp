@@ -1,5 +1,15 @@
 #include "utils.h"
 
+
+void Utils::load_ROM(std::array<uint8_t, MEMORY_SIZE>& m, std::string file) {
+	std::ifstream ifs(file, std::ifstream::binary);
+
+	if (ifs) {
+		ifs.read(reinterpret_cast<char*>(&m[ROM_START_ADDR]), ROM_SIZE);
+	}
+}
+
+
 void Utils::load_binary_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::string file) {
 	std::ifstream ifs(file, std::ifstream::binary);
 
@@ -16,7 +26,7 @@ void Utils::store_binary_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::string f
 	}
 }
 
-void Utils::store_formatted_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::string file, uint16_t begin, uint16_t end) {
+void Utils::store_formatted_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::string file, uint begin, uint end) {
 	std::ofstream ofs(file, std::ofstream::out);
 
 	if (!ofs) {
@@ -25,13 +35,13 @@ void Utils::store_formatted_dump(std::array<uint8_t, MEMORY_SIZE>& m, std::strin
 
 	// normalize index
 	begin = begin - (begin % 8);
-	end	  = end + (end % 8) == 0 ? 0 : end + 8 - end % 8;
+	end	  = end + (end % 8) == 0 ? end : end + 8 - end % 8;
 
 	ofs << std::hex << std::setfill('0') << std::uppercase;
 
-	for (uint16_t i = begin; i < end;) {
+	for (uint i = begin; i < end;) {
 		ofs << ":" << std::setw(4) << i << " ";
-		uint16_t endl = i + 8;
+		uint endl = i + 8;
 
 		for (; i < endl; i++) {
 			ofs << std::setw(2) << static_cast<int>(m[i]);
